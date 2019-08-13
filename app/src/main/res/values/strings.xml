@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">TopQuiz</string>
+    <string name="welcome_message">Welcome in TopQuiz! What\'s your name ?</string>
+    <string name="name_hint">Please type your name</string>
+    <string name="play_button">Let\'s play</string>
+    <string name="question">question ?</string>
+    <string name="answer1">Answer1</string>
+    <string name="answer2">Answer2</string>
+    <string name="answer3">Answer3</string>
+    <string name="answer4">Answer4</string>
+</resources>
