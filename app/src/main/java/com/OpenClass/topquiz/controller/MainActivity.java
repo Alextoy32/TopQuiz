@@ -1,6 +1,7 @@
 package com.OpenClass.topquiz.controller;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,7 +28,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
         if (GAME_ACTIVITY_REQUEST_CODE == requestCode && RESULT_OK == resultCode){
+            assert data != null;
             int score = data.getIntExtra(GameActivity.BUNDLE_EXTRA_SCORE,0);
+            SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+            preferences.edit().putInt("lastScore",score).apply();
         }
     }
 
@@ -40,6 +44,17 @@ public class MainActivity extends AppCompatActivity {
         mPlayButton = findViewById(R.id.activity_main_play_btn);
         mPlayButton.setEnabled(false);
         mUser = new User();
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        String firstName = preferences.getString("firstname",null);
+        int lastScore = preferences.getInt("lastScore", -1);
+        if (firstName != null && lastScore >= 0){
+            mNameInput.setText(firstName);
+            mNameInput.setSelection(firstName.length());
+            firstName = "Welcome back "+firstName+" !\n Your last score was "+ lastScore +", will you do better this time?";
+        } else {
+            firstName = "Welcome in TopQuiz! What\\'s your name ?";
+        }
+        mGreetingText.setText(firstName);
 
         //activate button if a name is entered
         mNameInput.addTextChangedListener(new TextWatcher() {
@@ -64,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mUser.setFirstName(mNameInput.getText().toString());
+                SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+                preferences.edit().putString("firstname",mUser.getFirstName()).apply();
                 Intent gameActivity = new Intent(MainActivity.this, GameActivity.class);
                 startActivityForResult(gameActivity, GAME_ACTIVITY_REQUEST_CODE);
             }
