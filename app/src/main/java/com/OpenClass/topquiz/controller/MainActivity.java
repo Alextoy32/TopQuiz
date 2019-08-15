@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
             int score = data.getIntExtra(GameActivity.BUNDLE_EXTRA_SCORE,0);
             SharedPreferences preferences = getPreferences(MODE_PRIVATE);
             preferences.edit().putInt("lastScore",score).apply();
+            checkLastGame();
         }
     }
 
@@ -42,19 +43,8 @@ public class MainActivity extends AppCompatActivity {
         mGreetingText = findViewById(R.id.activity_main_greeting_text);
         mNameInput = findViewById(R.id.activity_main_name_input);
         mPlayButton = findViewById(R.id.activity_main_play_btn);
-        mPlayButton.setEnabled(false);
         mUser = new User();
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-        String firstName = preferences.getString("firstname",null);
-        int lastScore = preferences.getInt("lastScore", -1);
-        if (firstName != null && lastScore >= 0){
-            mNameInput.setText(firstName);
-            mNameInput.setSelection(firstName.length());
-            firstName = "Welcome back "+firstName+" !\n Your last score was "+ lastScore +", will you do better this time?";
-        } else {
-            firstName = "Welcome in TopQuiz! What\\'s your name ?";
-        }
-        mGreetingText.setText(firstName);
+        checkLastGame();
 
         //activate button if a name is entered
         mNameInput.addTextChangedListener(new TextWatcher() {
@@ -89,6 +79,22 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    }
+
+    public void checkLastGame(){
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        String firstName = preferences.getString("firstname",null);
+        int lastScore = preferences.getInt("lastScore", -1);
+        if (firstName != null && lastScore >= 0){
+            mNameInput.setText(firstName);
+            mNameInput.setSelection(firstName.length());
+            firstName = "Welcome back "+firstName+" !\nYour last score was "+ lastScore +", will you do better this time?";
+            mPlayButton.setEnabled(true);
+        } else {
+            firstName = "Welcome in TopQuiz! What\\'s your name ?";
+            mPlayButton.setEnabled(false);
+        }
+        mGreetingText.setText(firstName);
     }
 
 }

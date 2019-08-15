@@ -2,9 +2,11 @@ package com.OpenClass.topquiz.controller;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -30,6 +32,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private Question mCurrentQuestion;
     private int mNumberOfQuestions;
     private int mScore;
+    private boolean mEnableTouchEvents;
+
 
 
     @Override
@@ -59,10 +63,14 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         mQuestionBank = generateQuestions();
         mCurrentQuestion = mQuestionBank.getQuestion();
         displayQuestion(mCurrentQuestion);
+
+        mEnableTouchEvents = true;
     }
 
     @Override
     public void onClick(View v) {
+        mEnableTouchEvents = false;
+
         int responseIndex = (int) v.getTag();
         System.out.println(responseIndex+"     "+mCurrentQuestion.getAnswerIndex());
         if (responseIndex == mCurrentQuestion.getAnswerIndex()){
@@ -72,13 +80,24 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, "Wrong!", Toast.LENGTH_SHORT).show();
         }
         mNumberOfQuestions--;
-        if(mNumberOfQuestions == 0){
-            endGame();
-        } else {
-            mCurrentQuestion = mQuestionBank.getQuestion();
-            displayQuestion(mCurrentQuestion);
-        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(mNumberOfQuestions == 0){
+                    endGame();
+                } else {
+                    mCurrentQuestion = mQuestionBank.getQuestion();
+                    displayQuestion(mCurrentQuestion);
+                }
+                mEnableTouchEvents = true;
+            }
+        },2000);
 
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        return mEnableTouchEvents && super.dispatchTouchEvent(ev);
     }
 
     private void endGame(){
